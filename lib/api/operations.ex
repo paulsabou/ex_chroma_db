@@ -24,9 +24,7 @@ defmodule ExChromaDb.Api.Operations do
       url: "/api/v2/tenants/#{tenant}/databases/#{database}/collections/#{collection_id}/add",
       body: body,
       method: :post,
-      request: [
-        {"application/json", {ExChromaDb.Api.AddCollectionRecordsPayload, :t}}
-      ],
+      request: [{"application/json", {ExChromaDb.Api.AddCollectionRecordsPayload, :t}}],
       response: [{201, :map}, {400, :null}],
       opts: opts
     })
@@ -74,9 +72,7 @@ defmodule ExChromaDb.Api.Operations do
       url: "/api/v2/tenants/#{tenant}/databases/#{database}/collections/#{collection_id}/delete",
       body: body,
       method: :post,
-      request: [
-        {"application/json", {ExChromaDb.Api.DeleteCollectionRecordsPayload, :t}}
-      ],
+      request: [{"application/json", {ExChromaDb.Api.DeleteCollectionRecordsPayload, :t}}],
       response: [
         {200, :map},
         {401, {ExChromaDb.Api.ErrorResponse, :t}},
@@ -96,9 +92,7 @@ defmodule ExChromaDb.Api.Operations do
           String.t(),
           ExChromaDb.Api.GetRequestPayload.t(),
           keyword
-        ) ::
-          {:ok, ExChromaDb.Api.GetResponse.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+        ) :: {:ok, ExChromaDb.Api.GetResponse.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def collection_get(tenant, database, collection_id, body, opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -134,9 +128,7 @@ defmodule ExChromaDb.Api.Operations do
           String.t(),
           ExChromaDb.Api.QueryRequestPayload.t(),
           keyword
-        ) ::
-          {:ok, ExChromaDb.Api.QueryResponse.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+        ) :: {:ok, ExChromaDb.Api.QueryResponse.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def collection_query(tenant, database, collection_id, body, opts \\ []) do
     client = opts[:client] || @default_client
     query = Keyword.take(opts, [:limit, :offset])
@@ -178,9 +170,7 @@ defmodule ExChromaDb.Api.Operations do
       url: "/api/v2/tenants/#{tenant}/databases/#{database}/collections/#{collection_id}/update",
       body: body,
       method: :post,
-      request: [
-        {"application/json", {ExChromaDb.Api.UpdateCollectionRecordsPayload, :t}}
-      ],
+      request: [{"application/json", {ExChromaDb.Api.UpdateCollectionRecordsPayload, :t}}],
       response: [{200, :map}, {404, :null}],
       opts: opts
     })
@@ -205,9 +195,7 @@ defmodule ExChromaDb.Api.Operations do
       url: "/api/v2/tenants/#{tenant}/databases/#{database}/collections/#{collection_id}/upsert",
       body: body,
       method: :post,
-      request: [
-        {"application/json", {ExChromaDb.Api.UpsertCollectionRecordsPayload, :t}}
-      ],
+      request: [{"application/json", {ExChromaDb.Api.UpsertCollectionRecordsPayload, :t}}],
       response: [
         {200, :map},
         {401, {ExChromaDb.Api.ErrorResponse, :t}},
@@ -248,9 +236,7 @@ defmodule ExChromaDb.Api.Operations do
           String.t(),
           ExChromaDb.Api.CreateCollectionPayload.t(),
           keyword
-        ) ::
-          {:ok, ExChromaDb.Api.Collection.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+        ) :: {:ok, ExChromaDb.Api.Collection.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def create_collection(tenant, database, body, opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -273,11 +259,8 @@ defmodule ExChromaDb.Api.Operations do
   @doc """
   Creates a new database for a given tenant.
   """
-  @spec create_database(
-          String.t(),
-          ExChromaDb.Api.CreateDatabasePayload.t(),
-          keyword
-        ) :: {:ok, map} | {:error, ExChromaDb.Api.ErrorResponse.t()}
+  @spec create_database(String.t(), ExChromaDb.Api.CreateDatabasePayload.t(), keyword) ::
+          {:ok, map} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def create_database(tenant, body, opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -371,8 +354,7 @@ defmodule ExChromaDb.Api.Operations do
   Retrieves a collection by ID or name.
   """
   @spec get_collection(String.t(), String.t(), String.t(), keyword) ::
-          {:ok, ExChromaDb.Api.Collection.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, ExChromaDb.Api.Collection.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def get_collection(tenant, database, collection_id, opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -395,8 +377,7 @@ defmodule ExChromaDb.Api.Operations do
   Retrieves a specific database by name.
   """
   @spec get_database(String.t(), String.t(), keyword) ::
-          {:ok, ExChromaDb.Api.Database.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, ExChromaDb.Api.Database.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def get_database(tenant, database, opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -419,8 +400,7 @@ defmodule ExChromaDb.Api.Operations do
   Returns an existing tenant by name.
   """
   @spec get_tenant(String.t(), keyword) ::
-          {:ok, ExChromaDb.Api.GetTenantResponse.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, ExChromaDb.Api.GetTenantResponse.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def get_tenant(tenant_name, opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -464,8 +444,7 @@ defmodule ExChromaDb.Api.Operations do
   @doc """
   Health check endpoint that returns 200 if the server and executor are ready
   """
-  @spec healthcheck(keyword) ::
-          {:ok, String.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
+  @spec healthcheck(keyword) :: {:ok, String.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def healthcheck(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -474,10 +453,7 @@ defmodule ExChromaDb.Api.Operations do
       call: {ExChromaDb.Api.Operations, :healthcheck},
       url: "/api/v2/healthcheck",
       method: :get,
-      response: [
-        {200, {:string, :generic}},
-        {503, {ExChromaDb.Api.ErrorResponse, :t}}
-      ],
+      response: [{200, {:string, :generic}}, {503, {ExChromaDb.Api.ErrorResponse, :t}}],
       opts: opts
     })
   end
@@ -486,8 +462,7 @@ defmodule ExChromaDb.Api.Operations do
   Heartbeat endpoint that returns a nanosecond timestamp of the current time.
   """
   @spec heartbeat(keyword) ::
-          {:ok, ExChromaDb.Api.HeartbeatResponse.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, ExChromaDb.Api.HeartbeatResponse.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def heartbeat(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -514,8 +489,7 @@ defmodule ExChromaDb.Api.Operations do
 
   """
   @spec list_collections(String.t(), String.t(), keyword) ::
-          {:ok, [ExChromaDb.Api.Vec.t()]}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, [ExChromaDb.Api.Vec.t()]} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def list_collections(tenant, database, opts \\ []) do
     client = opts[:client] || @default_client
     query = Keyword.take(opts, [:limit, :offset])
@@ -545,8 +519,7 @@ defmodule ExChromaDb.Api.Operations do
 
   """
   @spec list_databases(String.t(), keyword) ::
-          {:ok, [ExChromaDb.Api.Vec.t()]}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, [ExChromaDb.Api.Vec.t()]} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def list_databases(tenant, opts \\ []) do
     client = opts[:client] || @default_client
     query = Keyword.take(opts, [:limit, :offset])
@@ -570,8 +543,7 @@ defmodule ExChromaDb.Api.Operations do
   Pre-flight checks endpoint reporting basic readiness info.
   """
   @spec pre_flight_checks(keyword) ::
-          {:ok, ExChromaDb.Api.ChecklistResponse.t()}
-          | {:error, ExChromaDb.Api.ErrorResponse.t()}
+          {:ok, ExChromaDb.Api.ChecklistResponse.t()} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def pre_flight_checks(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -591,8 +563,7 @@ defmodule ExChromaDb.Api.Operations do
   @doc """
   Reset endpoint allowing authorized users to reset the database.
   """
-  @spec reset(keyword) ::
-          {:ok, boolean} | {:error, ExChromaDb.Api.ErrorResponse.t()}
+  @spec reset(keyword) :: {:ok, boolean} | {:error, ExChromaDb.Api.ErrorResponse.t()}
   def reset(opts \\ []) do
     client = opts[:client] || @default_client
 

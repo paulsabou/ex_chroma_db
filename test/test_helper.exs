@@ -3,7 +3,7 @@
 {:ok, _} = Application.ensure_all_started(:cachex)
 
 # Start the ExChromaDb cache supervision tree
-# The child_specs function returns a nested list, so we flatten it
+# The child_specs function returns a list of supervisor child specs
 child_specs = ExChromaDb.child_specs()
 
 # Start a supervisor to manage the cache processes

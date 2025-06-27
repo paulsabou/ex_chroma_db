@@ -2,14 +2,16 @@
 
 import Config
 
-# Configure the ChromaDB client generator
-config :oapi_generator,
-  chromadb_client: [
-    output: [
-      base_module: ExChromaDb.Api,
-      location: "lib/api"
+# Configure the ChromaDB client generator (only in dev environment)
+if Mix.env() == :dev do
+  config :oapi_generator,
+    chromadb_client: [
+      output: [
+        base_module: ExChromaDb.Api,
+        location: "lib/api"
+      ]
     ]
-  ]
+end
 
 # Configure the ChromaDB client
 config :ex_chroma_db, ExChromaDb,
