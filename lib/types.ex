@@ -1,4 +1,8 @@
 defmodule ExChromaDb.Types do
+  @moduledoc """
+  A module that provides some useful types for working with the Chroma DB API.
+  """
+
   @type embedding_vector() :: list(float())
 
   @type one_result(t) :: {:ok, t} | {:error, any()}

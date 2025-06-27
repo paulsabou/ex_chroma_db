@@ -1,4 +1,8 @@
 defmodule ExChromaDb.Map do
+  @moduledoc """
+  A module that provides some useful functions for working with maps.
+  """
+
   def atom_keys_to_binary(map) when is_map(map) do
     Map.new(map, fn {k, v} -> {Atom.to_string(k), v} end)
   end
