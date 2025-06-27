@@ -1,0 +1,5 @@
+ARG CHROMA_DB_VERSION=latest
+
+FROM chromadb/chroma:${CHROMA_DB_VERSION}
+
+COPY chroma-config.yaml /config.yaml

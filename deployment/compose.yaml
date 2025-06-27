@@ -1,0 +1,28 @@
+name: ex_chroma_db
+services:
+  chroma_db:
+    build:
+      context: .
+      dockerfile: Dockerfile-chroma-db
+    env_file: 
+      - .env
+    ports:
+      - ${CHROMA_DB_PORT}:8000
+    volumes:
+      - type: volume
+        source: chroma-data
+        target: /tmp/chroma/data-ex_chroma_db
+
+  chroma_db_web:
+    build:
+      context: .
+      dockerfile: Dockerfile-chroma-web
+    env_file: 
+      - .env
+    ports:
+      - ${CHROMA_DB_WEB_PORT}:3000
+    depends_on:
+      - chroma_db
+
+volumes:
+  chroma-data:

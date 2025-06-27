@@ -10,7 +10,7 @@ defmodule ExChromaDb.MixProject do
     [
       app: :ex_chroma_db,
       version: @version,
-      elixir: "~> 1.18",
+      elixir: "~> 1.17",
       build_embedded: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
@@ -52,10 +52,12 @@ defmodule ExChromaDb.MixProject do
   defp deps do
     [
       # BEGIN --------------------------------- App core
-      # Caching local & distributed
+      # Caching for chromadb collections
       {:cachex, "~> 4.0.3"},
       # We generate the ChromaDB client from the OpenAPI spec
       {:oapi_generator, "~> 0.2.0", only: :dev, runtime: false},
+      # HTTP Cient
+      {:tesla, "~> 1.5"},
       # END --------------------------------- App core
 
       # BEGIN --------------------------------- Developer Experience
@@ -91,7 +93,8 @@ defmodule ExChromaDb.MixProject do
         "deps.unlock --check-unused",
         "format",
         "dialyzer"
-      ]
+      ],
+      "chromadb.generate": ["api.gen chromadb_client priv/openapi/chromadb.openapi.json"]
     ]
   end
 end
