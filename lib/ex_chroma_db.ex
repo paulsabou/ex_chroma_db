@@ -13,7 +13,7 @@ defmodule ExChromaDb do
 
   @default_pagination %{limit: 100, offset: 0}
   def child_specs do
-    [ChromadbCollectionsCache.config_cache_supervision_child_specs()]
+    ChromadbCollectionsCache.config_cache_supervision_child_specs()
   end
 
   def get_config() do
