@@ -3,11 +3,9 @@ defmodule ExChromaDbTest do
 
   use ExUnit.Case, async: false
 
-  alias ExChromaDb.ChromadbClient
-
   setup do
     # Code to run before each test
-    {:ok, true} = ChromadbClient.reset()
+    {:ok, true} = ExChromaDb.reset()
     # Code to run after each test
     on_exit(fn ->
       nil
@@ -18,16 +16,16 @@ defmodule ExChromaDbTest do
 
   describe "can connect to ChromaDB and retrieve info" do
     test "returns the healthcheck" do
-      {:ok, true} = ChromadbClient.healthcheck()
+      {:ok, true} = ExChromaDb.healthcheck()
     end
 
     test "returns the heartbeat" do
-      {:ok, heartbeat} = ChromadbClient.heartbeat()
+      {:ok, heartbeat} = ExChromaDb.heartbeat()
       assert heartbeat > 0
     end
 
     test "returns the version" do
-      {:ok, version} = ChromadbClient.version()
+      {:ok, version} = ExChromaDb.version()
       assert version =~ "1.0.0"
     end
   end
@@ -35,43 +33,43 @@ defmodule ExChromaDbTest do
   describe "can manage tenants in ChromaDB" do
     test "create a tenants with valid name" do
       tenant_name = "exchroma#{Enum.random(1..1000)}"
-      {:error, _} = ChromadbClient.get_tenant(tenant_name)
-      {:ok, tenant_name} = ChromadbClient.create_tenant(tenant_name)
-      {:ok, true} = ChromadbClient.get_tenant(tenant_name)
+      {:error, _} = ExChromaDb.get_tenant(tenant_name)
+      {:ok, tenant_name} = ExChromaDb.create_tenant(tenant_name)
+      {:ok, true} = ExChromaDb.get_tenant(tenant_name)
     end
 
     test "cannot create a tenants with invalid name" do
       tenant_name = ""
-      {:error, _} = ChromadbClient.create_tenant(tenant_name)
+      {:error, _} = ExChromaDb.create_tenant(tenant_name)
     end
   end
 
   describe "can manage databases in ChromaDB" do
     test "create a database with valid name" do
       {tenant_name, _database_name, _collection_name} = random_tenant_database_collection_name()
-      {:error, _} = ChromadbClient.get_tenant(tenant_name)
-      {:ok, tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:error, _} = ExChromaDb.get_tenant(tenant_name)
+      {:ok, tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       database_name = "db_exchroma#{Enum.random(1..1000)}"
 
       {:error, _} =
-        ChromadbClient.get_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.get_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, true} =
-        ChromadbClient.get_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.get_database(%{tenant_name: tenant_name, database_name: database_name})
     end
 
     test "cannot create a databases with invalid name" do
       {tenant_name, _database_name, _collection_name} = random_tenant_database_collection_name()
-      {:ok, _} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, _} = ExChromaDb.create_tenant(tenant_name)
 
       invalid_database_name = ""
 
       {:error, _} =
-        ChromadbClient.create_database(%{
+        ExChromaDb.create_database(%{
           tenant_name: tenant_name,
           database_name: invalid_database_name
         })
@@ -79,52 +77,52 @@ defmodule ExChromaDbTest do
 
     test "delete a database with valid name" do
       {tenant_name, database_name, _collection_name} = random_tenant_database_collection_name()
-      {:error, _} = ChromadbClient.get_tenant(tenant_name)
-      {:ok, tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:error, _} = ExChromaDb.get_tenant(tenant_name)
+      {:ok, tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:error, _} =
-        ChromadbClient.get_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.get_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, _} =
-        ChromadbClient.get_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.get_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, true} =
-        ChromadbClient.delete_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.delete_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:error, _} =
-        ChromadbClient.get_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.get_database(%{tenant_name: tenant_name, database_name: database_name})
     end
 
     test "cannot delete an nonexistent database" do
       {tenant_name, database_name, _collection_name} = random_tenant_database_collection_name()
-      {:error, _} = ChromadbClient.get_tenant(tenant_name)
-      {:ok, tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:error, _} = ExChromaDb.get_tenant(tenant_name)
+      {:ok, tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:error, _} =
-        ChromadbClient.get_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.get_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:error, _} =
-        ChromadbClient.delete_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.delete_database(%{tenant_name: tenant_name, database_name: database_name})
     end
 
     test "list databases" do
       {tenant_name, _database_name, _collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       # There are no databases yet
-      {:ok, []} = ChromadbClient.list_databases(tenant_name)
+      {:ok, []} = ExChromaDb.list_databases(tenant_name)
 
       {:ok, "database_1"} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: "database_1"})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: "database_1"})
 
       {:ok, "database_2"} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: "database_2"})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: "database_2"})
 
-      {:ok, databases} = ChromadbClient.list_databases(tenant_name)
+      {:ok, databases} = ExChromaDb.list_databases(tenant_name)
       assert length(databases) == 2
 
       assert Enum.all?(databases, fn database ->
@@ -135,45 +133,45 @@ defmodule ExChromaDbTest do
     test "count collections in database" do
       {tenant_name, _database_name, _collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       database_info = %{tenant_name: tenant_name, database_name: "database_1"}
 
       {:ok, "database_1"} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: "database_1"})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: "database_1"})
 
-      {:ok, 0} = ChromadbClient.count_collections(database_info)
+      {:ok, 0} = ExChromaDb.count_collections(database_info)
 
       {:ok, "collection_1"} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: "database_1",
           collection_name: "collection_1"
         })
 
-      {:ok, 1} = ChromadbClient.count_collections(database_info)
+      {:ok, 1} = ExChromaDb.count_collections(database_info)
 
       {:ok, "collection_2"} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: "database_1",
           collection_name: "collection_2"
         })
 
-      {:ok, 2} = ChromadbClient.count_collections(database_info)
+      {:ok, 2} = ExChromaDb.count_collections(database_info)
     end
   end
 
   describe "can manage collections in ChromaDB" do
     test "create a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: collection_name
@@ -183,13 +181,13 @@ defmodule ExChromaDbTest do
     test "cannot create a collection with invalid name" do
       {tenant_name, database_name, _collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:error, _} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: ""
@@ -199,41 +197,41 @@ defmodule ExChromaDbTest do
     test "cannot delete nonexistent collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       {:error, _} =
-        ChromadbClient.get_collection_info(%{
+        ExChromaDb.get_collection_info(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: collection_name
         })
 
       {:error, _} =
-        ChromadbClient.delete_collection(%{
+        ExChromaDb.delete_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: collection_name
         })
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: collection_name
         })
 
       {:ok, true} =
-        ChromadbClient.delete_collection(%{
+        ExChromaDb.delete_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: collection_name
         })
 
       {:error, _} =
-        ChromadbClient.get_collection_info(%{
+        ExChromaDb.get_collection_info(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: collection_name
@@ -243,31 +241,31 @@ defmodule ExChromaDbTest do
     test "list collections" do
       {tenant_name, database_name, _collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       # There are no collections yet
       {:ok, []} =
-        ChromadbClient.list_collections(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.list_collections(%{tenant_name: tenant_name, database_name: database_name})
 
       {:ok, "collection_1"} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: "collection_1"
         })
 
       {:ok, "collection_2"} =
-        ChromadbClient.create_collection(%{
+        ExChromaDb.create_collection(%{
           tenant_name: tenant_name,
           database_name: database_name,
           collection_name: "collection_2"
         })
 
       {:ok, collections} =
-        ChromadbClient.list_collections(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.list_collections(%{tenant_name: tenant_name, database_name: database_name})
 
       assert length(collections) == 2
 
@@ -279,10 +277,10 @@ defmodule ExChromaDbTest do
     test "add records to a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       collection_info_with_name = %{
         tenant_name: tenant_name,
@@ -291,14 +289,14 @@ defmodule ExChromaDbTest do
       }
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(collection_info_with_name)
+        ExChromaDb.create_collection(collection_info_with_name)
 
       id1 = UUID.uuid4()
       id2 = UUID.uuid4()
 
       # Can add records to an existing collection
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2"],
@@ -310,16 +308,16 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 2} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
     end
 
     test "delete records by id in a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       collection_info_with_name = %{
         tenant_name: tenant_name,
@@ -328,13 +326,13 @@ defmodule ExChromaDbTest do
       }
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(collection_info_with_name)
+        ExChromaDb.create_collection(collection_info_with_name)
 
       id1 = UUID.uuid4()
       id2 = UUID.uuid4()
 
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2"],
@@ -346,35 +344,35 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 2} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       # Can delete all records from a collection
       {:ok, true} =
-        ChromadbClient.collection_records_delete_by_ids(
+        ExChromaDb.collection_records_delete_by_ids(
           collection_info_with_name,
           [id1]
         )
 
       {:ok, 1} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_delete_by_ids(
+        ExChromaDb.collection_records_delete_by_ids(
           collection_info_with_name,
           [id2]
         )
 
       {:ok, 0} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
     end
 
     test "add and delete records by metas to a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       collection_info_with_name = %{
         tenant_name: tenant_name,
@@ -383,7 +381,7 @@ defmodule ExChromaDbTest do
       }
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(collection_info_with_name)
+        ExChromaDb.create_collection(collection_info_with_name)
 
       id1 = UUID.uuid4()
       id2 = UUID.uuid4()
@@ -392,7 +390,7 @@ defmodule ExChromaDbTest do
       id4 = UUID.uuid4()
 
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2"],
@@ -404,10 +402,10 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 2} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_3", "document_4"],
@@ -419,52 +417,52 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 4} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_delete_by_metas(
+        ExChromaDb.collection_records_delete_by_metas(
           collection_info_with_name,
           %{"metadata_1" => "metadata_1"}
         )
 
       {:ok, 3} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_delete_by_metas(
+        ExChromaDb.collection_records_delete_by_metas(
           collection_info_with_name,
           %{"metadata_2" => "metadata_2"}
         )
 
       {:ok, 2} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_delete_by_metas(
+        ExChromaDb.collection_records_delete_by_metas(
           collection_info_with_name,
           %{"metadata_3" => "metadata_3"}
         )
 
       {:ok, 1} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_delete_by_metas(
+        ExChromaDb.collection_records_delete_by_metas(
           collection_info_with_name,
           %{"metadata_4" => "metadata_4"}
         )
 
       {:ok, 0} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
     end
 
     test "add and update records in a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       collection_info_with_name = %{
         tenant_name: tenant_name,
@@ -473,14 +471,14 @@ defmodule ExChromaDbTest do
       }
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(collection_info_with_name)
+        ExChromaDb.create_collection(collection_info_with_name)
 
       id1 = UUID.uuid4()
       id2 = UUID.uuid4()
       id3 = UUID.uuid4()
 
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2"],
@@ -492,10 +490,10 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 2} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_upsert(
+        ExChromaDb.collection_records_upsert(
           collection_info_with_name,
           %{
             documents: ["document_3"],
@@ -507,10 +505,10 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 3} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, true} =
-        ChromadbClient.collection_records_update(
+        ExChromaDb.collection_records_update(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2"],
@@ -522,10 +520,10 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 3} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, response} =
-        ChromadbClient.collection_records_get(
+        ExChromaDb.collection_records_get(
           collection_info_with_name,
           %{
             include: ["documents", "embeddings", "metadatas", "uris"]
@@ -548,10 +546,10 @@ defmodule ExChromaDbTest do
     test "get records from a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       collection_info_with_name = %{
         tenant_name: tenant_name,
@@ -560,13 +558,13 @@ defmodule ExChromaDbTest do
       }
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(collection_info_with_name)
+        ExChromaDb.create_collection(collection_info_with_name)
 
       id1 = UUID.uuid4()
       id2 = UUID.uuid4()
 
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2"],
@@ -578,10 +576,10 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 2} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, response} =
-        ChromadbClient.collection_records_get(
+        ExChromaDb.collection_records_get(
           collection_info_with_name,
           %{
             include: ["documents", "embeddings", "metadatas", "uris"],
@@ -604,10 +602,10 @@ defmodule ExChromaDbTest do
     test "add and query records in a collection" do
       {tenant_name, database_name, collection_name} = random_tenant_database_collection_name()
 
-      {:ok, ^tenant_name} = ChromadbClient.create_tenant(tenant_name)
+      {:ok, ^tenant_name} = ExChromaDb.create_tenant(tenant_name)
 
       {:ok, ^database_name} =
-        ChromadbClient.create_database(%{tenant_name: tenant_name, database_name: database_name})
+        ExChromaDb.create_database(%{tenant_name: tenant_name, database_name: database_name})
 
       collection_info_with_name = %{
         tenant_name: tenant_name,
@@ -616,14 +614,14 @@ defmodule ExChromaDbTest do
       }
 
       {:ok, ^collection_name} =
-        ChromadbClient.create_collection(collection_info_with_name)
+        ExChromaDb.create_collection(collection_info_with_name)
 
       id1 = UUID.uuid4()
       id2 = UUID.uuid4()
       id3 = UUID.uuid4()
 
       {:ok, true} =
-        ChromadbClient.collection_records_add(
+        ExChromaDb.collection_records_add(
           collection_info_with_name,
           %{
             documents: ["document_1", "document_2", "document_3"],
@@ -639,10 +637,10 @@ defmodule ExChromaDbTest do
         )
 
       {:ok, 3} =
-        ChromadbClient.collection_records_count(collection_info_with_name)
+        ExChromaDb.collection_records_count(collection_info_with_name)
 
       {:ok, response1} =
-        ChromadbClient.collection_records_query(
+        ExChromaDb.collection_records_query(
           collection_info_with_name,
           %{
             include: ["documents", "embeddings", "metadatas", "uris"],
@@ -654,7 +652,7 @@ defmodule ExChromaDbTest do
       assert response1.documents == [["document_1", "document_2"]]
 
       {:ok, response2} =
-        ChromadbClient.collection_records_get(
+        ExChromaDb.collection_records_get(
           collection_info_with_name,
           %{
             include: ["documents", "embeddings", "metadatas", "uris"],

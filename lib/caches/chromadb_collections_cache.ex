@@ -4,7 +4,6 @@ defmodule ExChromaDb.Caches.ChromadbCollectionsCache do
   """
 
   alias ExChromaDb.Types
-  alias ExChromaDb.ChromadbClient
   alias ExChromaDb.Api.Collection
 
   import Cachex.Spec
@@ -80,7 +79,7 @@ defmodule ExChromaDb.Caches.ChromadbCollectionsCache do
     do:
       "#{collection_info.tenant_name}/#{collection_info.database_name}/#{collection_info.collection_name}"
 
-  @spec get_one_collection(ChromadbClient.collection_info()) :: Types.one_result(Collection.t())
+  @spec get_one_collection(Types.collection_info()) :: Types.one_result(Collection.t())
   def get_one_collection(collection_info) do
     key = cache_key(collection_info)
 
@@ -106,14 +105,14 @@ defmodule ExChromaDb.Caches.ChromadbCollectionsCache do
     {:ok, true}
   end
 
-  @spec invalidate_one_collection(ChromadbClient.collection_info()) :: {:ok, boolean() | nil}
+  @spec invalidate_one_collection(Types.collection_info()) :: {:ok, boolean() | nil}
   def invalidate_one_collection(collection_info) do
     Cachex.del(@cache_name, cache_key(collection_info))
   end
 
   defp maybe_compute_and_store_one_collection(collection_info) do
-    with {:ok, _response} <- ChromadbClient.get_or_create_collection(collection_info),
-         {:ok, collection} <- ChromadbClient.get_collection_info(collection_info),
+    with {:ok, _response} <- ExChromaDb.get_or_create_collection(collection_info),
+         {:ok, collection} <- ExChromaDb.get_collection_info(collection_info),
          key <- cache_key(collection_info),
          {:ok, true} <- Cachex.put(@cache_name, key, collection) do
       {:ok, collection}

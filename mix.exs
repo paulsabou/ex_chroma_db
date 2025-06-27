@@ -14,6 +14,10 @@ defmodule ExChromaDb.MixProject do
       build_embedded: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: [
+        plt_add_apps: [:mix],
+        ignore_warnings: ".dialyzer_ignore.exs"
+      ],
 
       # Hex
       package: hex_package(),
@@ -33,7 +37,7 @@ defmodule ExChromaDb.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :telemetry]
+      extra_applications: [:logger, :telemetry, :hackney]
     ]
   end
 
@@ -58,6 +62,10 @@ defmodule ExChromaDb.MixProject do
       {:oapi_generator, "~> 0.2.0", only: :dev, runtime: false},
       # HTTP Cient
       {:tesla, "~> 1.5"},
+      # HTTP adapter for Tesla
+      {:hackney, "~> 1.18", runtime: true},
+      # UUID generation for tests
+      {:uuid, "~> 1.1", only: [:dev, :test], runtime: false},
       # END --------------------------------- App core
 
       # BEGIN --------------------------------- Developer Experience
