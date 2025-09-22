@@ -79,8 +79,6 @@ defmodule ExChromaDb.MixProject do
       {:ex_doc, ">= 0.0.0", only: [:dev], runtime: false},
       # Deps security audits
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
-      # Watch code changes & rerun tests automatically
-      {:mix_test_watch, "~> 1.2.0", only: [:dev, :test], runtime: false},
       # Test factories
       {:ex_machina, "~> 2.8.0", only: :test},
       # Tidewave - LLM API MCP
